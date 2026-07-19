@@ -953,7 +953,7 @@ export default function FederalContractingRoadmap() {
 
   async function toggleTask(taskId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}/toggle`, {
+      const response = await fetch(`${API_BASE_URL}/api/toggle?taskId=${taskId}`, {
         method: "POST",
       });
 
