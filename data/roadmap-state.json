@@ -1,3 +1,6 @@
 {
-  "completed": {}
+  "completed": {
+    "sam-registration": true,
+    "phase-1": true
+  }
 }
