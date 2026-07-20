@@ -1,25 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  (window.location.port === "5173"
-    ? "http://localhost:3001"
-    : window.location.origin);
-
-/**
- * FederalContractingRoadmap.jsx
- *
- * A self-contained React checklist for planning and presenting
- * a federal IT contracting strategy.
- *
- * Features:
- * - Phase-by-phase checklist
- * - Progress tracking
- * - LocalStorage persistence
- * - Expand/collapse sections
- * - Print-friendly layout
- * - Team presentation summary
- */
+import React, { useState } from "react";
 
 const roadmapData = [
   {
@@ -580,108 +559,6 @@ const styles = `
     line-height: 1.7;
   }
 
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-  .button {
-    border: 0;
-    border-radius: 12px;
-    padding: 11px 16px;
-    cursor: pointer;
-    font-weight: 750;
-  }
-
-  .button-primary {
-    background: white;
-    color: #17336d;
-  }
-
-  .button-secondary {
-    background: rgba(255,255,255,0.13);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.24);
-  }
-
-  .dashboard {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 18px;
-    margin: 22px 0;
-  }
-
-  .panel {
-    background: rgba(255,255,255,0.92);
-    border: 1px solid #dfe5ef;
-    border-radius: 20px;
-    padding: 22px;
-    box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
-  }
-
-  .panel h2 {
-    margin: 0 0 14px;
-    font-size: 1.15rem;
-  }
-
-  .progress-number {
-    font-size: 2.5rem;
-    font-weight: 850;
-    margin: 0 0 8px;
-  }
-
-  .progress-track {
-    height: 14px;
-    border-radius: 999px;
-    background: #e8edf5;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #2563eb, #0f766e);
-    transition: width 220ms ease;
-  }
-
-  .muted {
-    color: #667085;
-    line-height: 1.6;
-  }
-
-  .positioning {
-    font-weight: 800;
-    font-size: 1.08rem;
-    line-height: 1.5;
-    color: #17336d;
-  }
-
-  .toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 22px 0 14px;
-    align-items: center;
-  }
-
-  .toolbar h2 {
-    margin: 0;
-  }
-
-  .toolbar-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .toolbar .button {
-    background: white;
-    border: 1px solid #d8deea;
-    color: #263248;
-  }
-
   .phase-list {
     display: grid;
     gap: 16px;
@@ -706,6 +583,32 @@ const styles = `
     background: white;
     text-align: left;
     cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  .phase-header:hover {
+    background: #f8f9fc;
+  }
+
+  .phase-toggle {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #667085;
+    text-align: right;
+    min-width: 30px;
+  }
+
+  .phase-header-static {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    background: white;
+    text-align: left;
+    border-bottom: 1px solid #edf0f5;
   }
 
   .phase-badge {
@@ -722,19 +625,6 @@ const styles = `
   .phase-title {
     margin: 0;
     font-size: 1.2rem;
-  }
-
-  .phase-meta {
-    margin-top: 5px;
-    color: #667085;
-    font-size: 0.92rem;
-  }
-
-  .phase-status {
-    text-align: right;
-    font-weight: 800;
-    color: #0f766e;
-    white-space: nowrap;
   }
 
   .phase-body {
@@ -760,11 +650,6 @@ const styles = `
     background: #fbfcfe;
   }
 
-  .task.completed {
-    background: #f0fdf7;
-    border-color: #b7e4cf;
-  }
-
   .task-label {
     display: flex;
     align-items: flex-start;
@@ -772,21 +657,11 @@ const styles = `
     cursor: pointer;
   }
 
-  .task-label input {
-    margin-top: 3px;
-    width: 19px;
-    height: 19px;
-    accent-color: #0f766e;
-  }
-
   .task-title {
     font-weight: 800;
     line-height: 1.45;
-  }
-
-  .task.completed .task-title {
-    text-decoration: line-through;
-    color: #527066;
+    display: block;
+    margin-bottom: 10px;
   }
 
   .task ul {
@@ -842,20 +717,12 @@ const styles = `
   }
 
   @media (max-width: 820px) {
-    .dashboard {
-      grid-template-columns: 1fr;
-    }
-
     .milestone-grid {
       grid-template-columns: 1fr 1fr;
     }
 
     .phase-header {
-      grid-template-columns: 1fr;
-    }
-
-    .phase-status {
-      text-align: left;
+      grid-template-columns: auto 1fr auto;
     }
   }
 
@@ -909,6 +776,16 @@ const styles = `
       break-inside: avoid;
     }
 
+    .phase-header {
+      background: #f5f7fb;
+      padding: 16px 20px;
+      border-bottom: 1px solid #dfe5ef;
+    }
+
+    .phase-toggle {
+      display: none;
+    }
+
     .phase-body {
       display: block !important;
     }
@@ -916,102 +793,15 @@ const styles = `
 `;
 
 export default function FederalContractingRoadmap() {
-  const allTaskIds = useMemo(
-    () => roadmapData.flatMap((phase) => phase.tasks.map((task) => task.id)),
-    []
-  );
-
-  const [completed, setCompleted] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
   const [openPhases, setOpenPhases] = useState(() =>
     Object.fromEntries(roadmapData.map((phase) => [phase.id, true]))
   );
-
-  useEffect(() => {
-    async function loadState() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/tasks`);
-        if (!response.ok) {
-          throw new Error("Unable to load shared task state");
-        }
-        const data = await response.json();
-        setCompleted(data.completed || {});
-      } catch (err) {
-        setError(err.message || "Unable to load shared task state");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadState();
-  }, []);
-
-  const completedCount = allTaskIds.filter((id) => completed[id]).length;
-  const progress = Math.round((completedCount / allTaskIds.length) * 100);
-
-  async function toggleTask(taskId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/tasks/${taskId}/toggle`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to update task state");
-      }
-
-      const data = await response.json();
-      setCompleted(data.completed || {});
-      setError("");
-    } catch (err) {
-      setError(err.message || "Unable to update task state");
-    }
-  }
 
   function togglePhase(phaseId) {
     setOpenPhases((current) => ({
       ...current,
       [phaseId]: !current[phaseId],
     }));
-  }
-
-  function expandAll() {
-    setOpenPhases(
-      Object.fromEntries(roadmapData.map((phase) => [phase.id, true]))
-    );
-  }
-
-  function collapseAll() {
-    setOpenPhases(
-      Object.fromEntries(roadmapData.map((phase) => [phase.id, false]))
-    );
-  }
-
-  async function resetProgress() {
-    const confirmed = window.confirm(
-      "Reset all checklist progress? This cannot be undone."
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/reset`, {
-        method: "POST",
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to reset task state");
-      }
-
-      const data = await response.json();
-      setCompleted(data.completed || {});
-      setError("");
-    } catch (err) {
-      setError(err.message || "Unable to reset task state");
-    }
   }
 
   return (
@@ -1021,102 +811,25 @@ export default function FederalContractingRoadmap() {
       <main className="roadmap-app">
         <div className="roadmap-shell">
           <section className="hero">
-            <p className="eyebrow">Pollynz Consults — Federal Growth Plan</p>
+            <p className="eyebrow">Federal Growth Plan</p>
             <h1>Federal IT Contracting Roadmap</h1>
             <p className="hero-copy">
               A practical, team-ready guide for positioning the company as a
               specialized digital modernization, accessibility, cloud, and
               automation partner for U.S. government agencies.
             </p>
-
-            <div className="hero-actions">
-              <button
-                className="button button-primary"
-                type="button"
-                onClick={() => window.print()}
-              >
-                Print or Save as PDF
-              </button>
-              <button
-                className="button button-secondary"
-                type="button"
-                onClick={expandAll}
-              >
-                Expand All Phases
-              </button>
-            </div>
-          </section>
-
-          <section className="dashboard" aria-label="Roadmap summary">
-            <div className="panel">
-              <h2>Overall Progress</h2>
-              <p className="progress-number">{progress}%</p>
-              <div
-                className="progress-track"
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={progress}
-                aria-label="Roadmap completion"
-              >
-                <div
-                  className="progress-fill"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="muted">
-                {completedCount} of {allTaskIds.length} major actions completed.
-                Progress is shared through the team backend and updates in real time.
-              </p>
-            </div>
-
-            <div className="panel">
-              <h2>Recommended Market Position</h2>
-              <p className="positioning">
-                Enterprise Digital Accessibility • Modern Web Engineering •
-                Cloud Solutions • AI Automation
-              </p>
-              <p className="muted">
-                Lead with specialization rather than presenting the company as a
-                general IT vendor.
-              </p>
-            </div>
           </section>
 
           <section>
-            <div className="toolbar">
-              <div>
-                <p className="eyebrow" style={{ color: "#516078" }}>
-                  Execution Checklist
-                </p>
-                <h2>Step-by-Step Action Plan</h2>
-              </div>
-
-              <div className="toolbar-actions">
-                <button className="button" type="button" onClick={expandAll}>
-                  Expand All
-                </button>
-                <button className="button" type="button" onClick={collapseAll}>
-                  Collapse All
-                </button>
-                <button className="button" type="button" onClick={resetProgress}>
-                  Reset Progress
-                </button>
-              </div>
+            <div>
+              <p className="eyebrow" style={{ color: "#516078" }}>
+                Execution Checklist
+              </p>
+              <h2>Step-by-Step Action Plan</h2>
             </div>
-
-            {loading ? (
-              <p className="muted">Loading shared roadmap state…</p>
-            ) : error ? (
-              <p className="muted" style={{ color: "#b42318" }}>{error}</p>
-            ) : null}
 
             <div className="phase-list">
               {roadmapData.map((phase) => {
-                const phaseCompleted = phase.tasks.filter(
-                  (task) => completed[task.id]
-                ).length;
-
                 return (
                   <article className="phase-card" key={phase.id}>
                     <button
@@ -1130,11 +843,10 @@ export default function FederalContractingRoadmap() {
 
                       <span>
                         <h3 className="phase-title">{phase.title}</h3>
-                        <span className="phase-meta">{phase.timeline}</span>
                       </span>
 
-                      <span className="phase-status">
-                        {phaseCompleted}/{phase.tasks.length} complete
+                      <span className="phase-toggle">
+                        {openPhases[phase.id] ? "−" : "+"}
                       </span>
                     </button>
 
@@ -1146,25 +858,11 @@ export default function FederalContractingRoadmap() {
 
                         <div className="task-list">
                           {phase.tasks.map((task) => {
-                            const isCompleted = Boolean(completed[task.id]);
-
                             return (
-                              <div
-                                className={`task ${
-                                  isCompleted ? "completed" : ""
-                                }`}
-                                key={task.id}
-                              >
-                                <label className="task-label">
-                                  <input
-                                    type="checkbox"
-                                    checked={isCompleted}
-                                    onChange={() => toggleTask(task.id)}
-                                  />
-                                  <span className="task-title">
-                                    {task.title}
-                                  </span>
-                                </label>
+                              <div className="task" key={task.id}>
+                                <span className="task-title">
+                                  {task.title}
+                                </span>
 
                                 <ul>
                                   {task.details.map((detail) => (
@@ -1184,13 +882,11 @@ export default function FederalContractingRoadmap() {
           </section>
 
           <section className="milestones">
-            <div className="toolbar">
-              <div>
-                <p className="eyebrow" style={{ color: "#516078" }}>
-                  12-Month View
-                </p>
-                <h2>Key Milestones</h2>
-              </div>
+            <div>
+              <p className="eyebrow" style={{ color: "#516078" }}>
+                12-Month View
+              </p>
+              <h2>Key Milestones</h2>
             </div>
 
             <div className="milestone-grid">
